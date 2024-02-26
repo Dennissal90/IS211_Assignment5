@@ -32,8 +32,11 @@ def load_requests(filename):
     with open(filename, 'r') as file:
         reader = csv.reader(file)
         for row in reader:
-            request_time, process_time = map(int, row)
-            requests.append(Request(request_time, process_time))
+            try:
+                request_time, process_time = map(int, row[:2])
+                requests.append(Request(request_time, process_time))
+            except ValueError:
+                print(f"Skipping invalid row: {row}")
     return requests
 
 def simulate_single_server(requests):
@@ -82,7 +85,7 @@ def simulate_multiple_servers(requests, number_of_servers):
     print(f"Multiple Servers: Average Wait {average_wait:.2f} secs with {len(waiting_times)} requests.")
 
 def main():
-    requests = load_requests('/mnt/data/requests.csv')
+    requests = load_requests('requests.csv')
     simulate_single_server(requests)
     simulate_multiple_servers(requests, 3)
 
